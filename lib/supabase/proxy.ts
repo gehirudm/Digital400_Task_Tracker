@@ -12,15 +12,24 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, cacheHeaders) {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
+          );
+          // Prevent CDN caching of responses containing auth cookies.
+          // Without these headers, a cached response could leak a session
+          // to another user.
+          Object.entries(cacheHeaders).forEach(([key, value]) =>
+            supabaseResponse.headers.set(key, value),
           );
         },
       },
     },
   );
 
+  // getUser() validates the token against Supabase's auth server.
+  // This is safe for proxy use — the "never trust getSession()" warning
+  // applies to getSession(), not getUser().
   const {
     data: { user },
   } = await supabase.auth.getUser();
