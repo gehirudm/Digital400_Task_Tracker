@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 
 import { TooltipProvider } from "@/components/atoms/tooltip";
+import { ApolloWrapper } from "@/components/organisms/apollo-provider";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -44,7 +45,9 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <ApolloWrapper>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ApolloWrapper>
       </body>
     </html>
   );

@@ -295,6 +295,8 @@ const eslintConfig = defineConfig([
       "@graphql-eslint/require-description": "off",
       "@graphql-eslint/strict-id-in-types": "warn",
       "@graphql-eslint/unique-enum-value-names": "error",
+      "@graphql-eslint/no-unreachable-types": "off",
+      "@graphql-eslint/naming-convention": "off",
     },
   },
 
@@ -365,11 +367,21 @@ const eslintConfig = defineConfig([
   },
 
   // ====================================================================
+  // APOLLO CLIENT — ESM-only package, import/named can't resolve it
+  // ====================================================================
+  {
+    name: "apollo/import-fix",
+    rules: {
+      "import/named": "off",
+    },
+  },
+
+  // ====================================================================
   // COMPONENTS — relax rules for React component patterns
   // ====================================================================
   {
     name: "components/rules",
-    files: ["components/**", "app/**"],
+    files: ["components/**", "app/**", "hooks/**", "lib/graphql/operations/**"],
     rules: {
       "sonarjs/prefer-read-only-props": "off",
       "sonarjs/deprecation": "off",

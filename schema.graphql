@@ -1,16 +1,83 @@
-# Placeholder GraphQL schema for ESLint validation.
-# Replace this with your generated schema once Pothos is set up.
-# Run `pnpm generate:schema` (or equivalent) to populate this file.
+# Generated from Pothos schema builder
+# Regenerate with: npx tsx scripts/generate-schema.ts
 
-schema {
-  query: Query
-  mutation: Mutation
-}
+scalar DateTime
 
 type Query {
-  health: Boolean
+  me: User
+  tasks(status: String, projectId: String): [Task!]!
+  task(id: String!): Task
+  projects: [Project!]!
 }
 
 type Mutation {
-  health: Boolean
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(id: String!, input: UpdateTaskInput!): Task!
+  deleteTask(id: String!): Boolean!
+  moveTask(id: String!, status: String!, sortOrder: Int!): Task!
+  createProject(name: String!): Project!
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String
+  avatarUrl: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Task {
+  id: ID!
+  title: String!
+  description: String
+  status: String!
+  priority: String!
+  dueDate: DateTime
+  sortOrder: Int!
+  assignee: User
+  project: Project
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  owner: User!
+  tasks: [Task!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+input CreateTaskInput {
+  title: String!
+  description: String
+  status: String
+  priority: String
+  dueDate: String
+  assigneeId: String
+  projectId: String
+}
+
+input UpdateTaskInput {
+  title: String
+  description: String
+  status: String
+  priority: String
+  dueDate: String
+  assigneeId: String
+  projectId: String
 }
