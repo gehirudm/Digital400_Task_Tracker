@@ -362,6 +362,17 @@ const eslintConfig = defineConfig([
       ),
     },
   },
+
+  // ====================================================================
+  // SHADCN ATOMS — relax rules for auto-generated shadcn/ui components
+  // ====================================================================
+  {
+    name: "shadcn/atoms",
+    files: ["components/atoms/**"],
+    rules: {
+      "sonarjs/prefer-read-only-props": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

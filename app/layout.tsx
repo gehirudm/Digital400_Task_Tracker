@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 
+import { TooltipProvider } from "@/components/atoms/tooltip";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
@@ -42,7 +43,9 @@ export default function RootLayout({
         spaceGrotesk.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <TooltipProvider>{children}</TooltipProvider>
+      </body>
     </html>
   );
 }
