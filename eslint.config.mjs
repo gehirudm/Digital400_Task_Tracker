@@ -373,6 +373,7 @@ const eslintConfig = defineConfig([
     rules: {
       "sonarjs/prefer-read-only-props": "off",
       "sonarjs/deprecation": "off",
+      "sonarjs/void-use": "off",
     },
   },
 ]);
