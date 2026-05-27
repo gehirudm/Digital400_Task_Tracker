@@ -14,6 +14,7 @@ import { AuthForm } from "@/components/molecules/auth-form";
 import { SocialAuthButton } from "@/components/molecules/social-auth-button";
 
 interface AuthCardProps {
+  defaultMode?: "login" | "signup";
   onEmailSubmit: (data: {
     email: string;
     password: string;
@@ -24,11 +25,12 @@ interface AuthCardProps {
 }
 
 export function AuthCard({
+  defaultMode = "login",
   onEmailSubmit,
   onSocialLogin,
   loading,
 }: AuthCardProps) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup">(defaultMode);
 
   return (
     <Card className="mx-auto w-full max-w-sm">

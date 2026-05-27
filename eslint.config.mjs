@@ -369,7 +369,7 @@ const eslintConfig = defineConfig([
   // ====================================================================
   {
     name: "components/rules",
-    files: ["components/**"],
+    files: ["components/**", "app/**"],
     rules: {
       "sonarjs/prefer-read-only-props": "off",
       "sonarjs/deprecation": "off",
