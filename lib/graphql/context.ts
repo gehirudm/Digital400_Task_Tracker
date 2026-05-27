@@ -18,7 +18,29 @@ export async function createContext(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  userId = user?.id ?? null;
+
+  if (user?.id && user.email) {
+    // Ensure the Supabase auth user exists in the Prisma database.
+    // Supabase Auth and Prisma User table are independent — we need
+    // to sync the auth user into our application database.
+    await prisma.user.upsert({
+      where: { id: user.id },
+      create: {
+        id: user.id,
+        email: user.email,
+        name: (user.user_metadata.name as string | undefined) ?? null,
+        avatarUrl:
+          (user.user_metadata.avatar_url as string | undefined) ?? null,
+      },
+      update: {
+        email: user.email,
+        name: (user.user_metadata.name as string | undefined) ?? null,
+        avatarUrl:
+          (user.user_metadata.avatar_url as string | undefined) ?? null,
+      },
+    });
+    userId = user.id;
+  }
 
   return {
     userId,

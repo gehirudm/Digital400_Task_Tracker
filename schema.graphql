@@ -8,6 +8,7 @@ type Query {
   tasks(status: String, projectId: String): [Task!]!
   task(id: String!): Task
   projects: [Project!]!
+  users: [User!]!
 }
 
 type Mutation {
@@ -16,6 +17,7 @@ type Mutation {
   deleteTask(id: String!): Boolean!
   moveTask(id: String!, status: String!, sortOrder: Int!): Task!
   createProject(name: String!): Project!
+  updateUser(input: UpdateUserInput!): User
 }
 
 type User {
@@ -80,4 +82,9 @@ input UpdateTaskInput {
   dueDate: String
   assigneeId: String
   projectId: String
+}
+
+input UpdateUserInput {
+  name: String
+  avatarUrl: String
 }

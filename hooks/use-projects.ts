@@ -31,7 +31,23 @@ export function useProjects() {
 }
 
 export function useCreateProject() {
-  return useMutation(CREATE_PROJECT, {
-    refetchQueries: [PROJECTS_QUERY],
-  });
+  return useMutation<{ createProject: ProjectData }, { name: string }>(
+    CREATE_PROJECT,
+    {
+      update(cache, { data }) {
+        const created = data?.createProject;
+        if (!created) return;
+
+        const existing = cache.readQuery<ProjectsQueryData>({
+          query: PROJECTS_QUERY,
+        });
+        if (!existing) return;
+
+        cache.writeQuery<ProjectsQueryData>({
+          query: PROJECTS_QUERY,
+          data: { projects: [created, ...existing.projects] },
+        });
+      },
+    },
+  );
 }

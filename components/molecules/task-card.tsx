@@ -29,7 +29,13 @@ const priorityColors: Record<string, string> = {
   high: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
 };
 
-interface TaskCardProps {
+const nextPriority: Record<string, string> = {
+  low: "medium",
+  medium: "high",
+  high: "low",
+};
+
+export interface TaskCardProps {
   id: string;
   title: string;
   description: string | null;
@@ -44,6 +50,11 @@ interface TaskCardProps {
   } | null;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onPriorityChange?: (id: string, priority: string) => void;
+  project?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 export function TaskCard({
@@ -54,17 +65,26 @@ export function TaskCard({
   priority,
   dueDate,
   assignee,
+  project,
   onEdit,
   onDelete,
+  onPriorityChange,
 }: TaskCardProps) {
   return (
-    <Card className="group cursor-pointer transition-shadow hover:shadow-md">
+    <Card className="group cursor-pointer select-none transition-shadow hover:shadow-md">
       <CardHeader className="flex flex-row items-start justify-between p-4 pb-2">
         <div className="flex flex-wrap gap-1.5">
           <Badge className={statusColors[status] ?? ""}>
             {status.replace("_", " ")}
           </Badge>
-          <Badge className={priorityColors[priority] ?? ""} variant="outline">
+          <Badge
+            className={`cursor-pointer ${priorityColors[priority] ?? ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPriorityChange?.(id, nextPriority[priority] ?? "medium");
+            }}
+            variant="outline"
+          >
             {priority}
           </Badge>
         </div>
@@ -99,19 +119,26 @@ export function TaskCard({
           </p>
         )}
         <div className="mt-3 flex items-center justify-between">
-          {assignee && (
-            <div className="flex items-center gap-1.5">
-              <Avatar className="h-5 w-5">
-                <AvatarImage src={assignee.avatarUrl ?? undefined} />
-                <AvatarFallback className="text-[10px]">
-                  {assignee.name?.charAt(0) ?? assignee.email.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-xs text-muted-foreground">
-                {assignee.name ?? assignee.email}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {assignee && (
+              <div className="flex items-center gap-1.5">
+                <Avatar className="h-5 w-5">
+                  <AvatarImage src={assignee.avatarUrl ?? undefined} />
+                  <AvatarFallback className="text-[10px]">
+                    {assignee.name?.charAt(0) ?? assignee.email.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-xs text-muted-foreground">
+                  {assignee.name ?? assignee.email}
+                </span>
+              </div>
+            )}
+            {project && (
+              <Badge className="text-[10px]" variant="secondary">
+                {project.name}
+              </Badge>
+            )}
+          </div>
           {dueDate && (
             <span className="text-xs text-muted-foreground">
               {new Date(dueDate).toLocaleDateString()}

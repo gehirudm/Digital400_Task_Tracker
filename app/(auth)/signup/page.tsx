@@ -45,7 +45,7 @@ export default function SignupPage() {
 
   return (
     <AuthCard
-      defaultMode="signup"
+      mode="signup"
       onEmailSubmit={handleEmailSignUp}
       onSocialLogin={handleSocialLogin}
     />

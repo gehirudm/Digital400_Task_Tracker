@@ -32,6 +32,7 @@ export default function LoginPage() {
 
   return (
     <AuthCard
+      mode="login"
       onEmailSubmit={handleEmailSignIn}
       onSocialLogin={handleSocialLogin}
     />

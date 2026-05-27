@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import { Sheet, SheetContent } from "@/components/atoms/sheet";
 import { DashboardHeader } from "@/components/organisms/dashboard-header";
 import { Sidebar } from "@/components/organisms/sidebar";
+import { SearchProvider, useSearch } from "@/lib/search-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+function DashboardContent({ children }: DashboardLayoutProps) {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
   const [user, setUser] = useState<{
@@ -21,6 +22,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     avatarUrl: string | null;
   } | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { query, setQuery } = useSearch();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -51,9 +53,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Desktop sidebar: always visible on md+ */}
       <Sidebar className="hidden md:flex" />
-      {/* Mobile sidebar: Sheet overlay */}
       <Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
         <SheetContent className="w-56 p-0" side="left">
           <Sidebar
@@ -65,11 +65,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <DashboardHeader
           onMenuToggle={() => setMobileOpen(true)}
+          onSearchChange={setQuery}
           onSignOut={handleSignOut}
+          searchQuery={query}
           user={user}
         />
         <main className="flex-1 overflow-hidden bg-muted/30">{children}</main>
       </div>
     </div>
+  );
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  return (
+    <SearchProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </SearchProvider>
   );
 }

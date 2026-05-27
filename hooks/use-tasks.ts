@@ -41,25 +41,85 @@ export function useTasks(status?: string, projectId?: string) {
 }
 
 export function useCreateTask() {
-  return useMutation(CREATE_TASK, {
-    refetchQueries: [TASKS_QUERY],
+  return useMutation<
+    { createTask: TaskData },
+    { input: Record<string, string | undefined> }
+  >(CREATE_TASK, {
+    update(cache, { data }) {
+      const created = data?.createTask;
+      if (!created) return;
+
+      const existing = cache.readQuery<TasksQueryData>({ query: TASKS_QUERY });
+      if (!existing) return;
+
+      cache.writeQuery<TasksQueryData>({
+        query: TASKS_QUERY,
+        data: { tasks: [created, ...existing.tasks] },
+      });
+    },
   });
 }
 
 export function useUpdateTask() {
-  return useMutation(UPDATE_TASK, {
-    refetchQueries: [TASKS_QUERY],
+  return useMutation<
+    { updateTask: TaskData },
+    { id: string; input: Record<string, string | undefined> }
+  >(UPDATE_TASK, {
+    update(cache, { data }) {
+      const updated = data?.updateTask;
+      if (!updated) return;
+
+      const existing = cache.readQuery<TasksQueryData>({ query: TASKS_QUERY });
+      if (!existing) return;
+
+      cache.writeQuery<TasksQueryData>({
+        query: TASKS_QUERY,
+        data: {
+          tasks: existing.tasks.map((t) => (t.id === updated.id ? updated : t)),
+        },
+      });
+    },
   });
 }
 
 export function useDeleteTask() {
-  return useMutation(DELETE_TASK, {
-    refetchQueries: [TASKS_QUERY],
+  return useMutation<{ deleteTask: boolean }, { id: string }>(DELETE_TASK, {
+    update(cache, _, { variables }) {
+      if (!variables?.id) return;
+
+      const existing = cache.readQuery<TasksQueryData>({ query: TASKS_QUERY });
+      if (!existing) return;
+
+      cache.writeQuery<TasksQueryData>({
+        query: TASKS_QUERY,
+        data: { tasks: existing.tasks.filter((t) => t.id !== variables.id) },
+      });
+    },
   });
 }
 
 export function useMoveTask() {
-  return useMutation(MOVE_TASK, {
-    refetchQueries: [TASKS_QUERY],
+  return useMutation<
+    { moveTask: TaskData },
+    { id: string; status: string; sortOrder: number }
+  >(MOVE_TASK, {
+    update(cache, { data }) {
+      const moved = data?.moveTask;
+      if (!moved) return;
+
+      const existing = cache.readQuery<TasksQueryData>({ query: TASKS_QUERY });
+      if (!existing) return;
+
+      cache.writeQuery<TasksQueryData>({
+        query: TASKS_QUERY,
+        data: {
+          tasks: existing.tasks.map((t) =>
+            t.id === moved.id
+              ? { ...t, status: moved.status, sortOrder: moved.sortOrder }
+              : t,
+          ),
+        },
+      });
+    },
   });
 }

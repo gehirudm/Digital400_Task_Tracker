@@ -7,12 +7,14 @@ import {
   type DragStartEvent,
   KeyboardSensor,
   PointerSensor,
+  useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 
@@ -32,6 +34,10 @@ interface Task {
     email: string;
     avatarUrl: string | null;
   } | null;
+  project: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 const columns = [
@@ -46,6 +52,24 @@ interface KanbanBoardProps {
   onAddTask: (status: string) => void;
   onEditTask: (id: string) => void;
   onDeleteTask: (id: string) => void;
+  onPriorityChange?: (id: string, priority: string) => void;
+}
+
+function DroppableColumn({
+  id,
+  children,
+  className,
+}: {
+  id: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const { setNodeRef } = useDroppable({ id });
+  return (
+    <div className={className} ref={setNodeRef}>
+      {children}
+    </div>
+  );
 }
 
 export function KanbanBoard({
@@ -54,6 +78,7 @@ export function KanbanBoard({
   onAddTask,
   onEditTask,
   onDeleteTask,
+  onPriorityChange,
 }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
@@ -79,17 +104,18 @@ export function KanbanBoard({
     const taskId = active.id as string;
     const overId = over.id as string;
 
-    const activeTask = tasks.find((t) => t.id === taskId);
-    const overTask = tasks.find((t) => t.id === overId);
-
-    if (!activeTask) return;
+    const movingTask = tasks.find((t) => t.id === taskId);
+    if (!movingTask) return;
 
     let newStatus: string;
+    const overTask = tasks.find((t) => t.id === overId);
     if (overTask) {
       newStatus = overTask.status;
     } else {
       newStatus = overId;
     }
+
+    if (newStatus === movingTask.status) return;
 
     const tasksInColumn = tasks.filter((t) => t.status === newStatus).length;
     onMoveTask(taskId, newStatus, tasksInColumn);
@@ -106,24 +132,35 @@ export function KanbanBoard({
     >
       <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory">
         {columns.map((column) => (
-          <SortableContext
+          <DroppableColumn
+            className="w-full shrink-0 md:w-72 md:snap-center lg:w-80"
+            id={column.id}
             key={column.id}
-            items={getColumnTasks(column.id).map((t) => t.id)}
           >
-            <KanbanColumn
-              onAddTask={() => onAddTask(column.id)}
-              onDeleteTask={onDeleteTask}
-              onEditTask={onEditTask}
-              tasks={getColumnTasks(column.id)}
-              title={column.title}
-            />
-          </SortableContext>
+            <SortableContext
+              items={getColumnTasks(column.id).map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <KanbanColumn
+                onAddTask={() => onAddTask(column.id)}
+                onDeleteTask={onDeleteTask}
+                onEditTask={onEditTask}
+                onPriorityChange={onPriorityChange}
+                tasks={getColumnTasks(column.id)}
+                title={column.title}
+              />
+            </SortableContext>
+          </DroppableColumn>
         ))}
       </div>
       <DragOverlay>
         {activeTask ? (
           <div className="w-full opacity-90 md:w-72 lg:w-80">
-            <TaskCard {...activeTask} />
+            <TaskCard
+              {...activeTask}
+              onDelete={onDeleteTask}
+              onPriorityChange={onPriorityChange}
+            />
           </div>
         ) : null}
       </DragOverlay>

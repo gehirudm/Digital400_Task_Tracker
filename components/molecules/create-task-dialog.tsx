@@ -22,11 +22,24 @@ import {
 } from "@/components/atoms/select";
 import { Textarea } from "@/components/atoms/textarea";
 
+interface ProjectOption {
+  id: string;
+  name: string;
+}
+
+interface UserOption {
+  id: string;
+  name: string | null;
+  email: string;
+}
+
 interface CreateTaskDialogProps {
   trigger?: React.ReactNode;
   onSave: (data: CreateTaskData) => Promise<void>;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  projects?: ProjectOption[];
+  users?: UserOption[];
 }
 
 export interface CreateTaskData {
@@ -35,6 +48,8 @@ export interface CreateTaskData {
   status: string;
   priority: string;
   dueDate: string;
+  projectId: string;
+  assigneeId: string;
 }
 
 export function CreateTaskDialog({
@@ -42,28 +57,45 @@ export function CreateTaskDialog({
   onSave,
   open,
   onOpenChange,
+  projects = [],
+  users = [],
 }: CreateTaskDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("todo");
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState("");
+  const [projectId, setProjectId] = useState("none");
+  const [assigneeId, setAssigneeId] = useState("none");
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      await onSave({ title, description, status, priority, dueDate });
+      await onSave({
+        title,
+        description,
+        status,
+        priority,
+        dueDate,
+        projectId: projectId === "none" ? "" : projectId,
+        assigneeId: assigneeId === "none" ? "" : assigneeId,
+      });
       setTitle("");
       setDescription("");
       setStatus("todo");
       setPriority("medium");
       setDueDate("");
+      setProjectId("none");
+      setAssigneeId("none");
       onOpenChange?.(false);
     } finally {
       setLoading(false);
     }
   };
+
+  const displayName = (user: UserOption) =>
+    user.name ?? user.email.split("@")[0];
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
@@ -116,6 +148,40 @@ export function CreateTaskDialog({
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label>Project</Label>
+              <Select onValueChange={setProjectId} value={projectId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>Assignee</Label>
+              <Select onValueChange={setAssigneeId} value={assigneeId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Unassigned</SelectItem>
+                  {users.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {displayName(u)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

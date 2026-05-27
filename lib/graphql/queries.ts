@@ -43,6 +43,20 @@ builder.queryField("tasks", (t) =>
   }),
 );
 
+builder.queryField("users", (t) =>
+  t.field({
+    type: [UserType],
+    resolve: async (_root, _args, ctx) => {
+      if (!ctx.userId) {
+        return [];
+      }
+      return prisma.user.findMany({
+        orderBy: { name: "asc" },
+      });
+    },
+  }),
+);
+
 builder.queryField("task", (t) =>
   t.field({
     type: TaskType,

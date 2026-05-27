@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 
 import {
   Card,
@@ -14,7 +14,7 @@ import { AuthForm } from "@/components/molecules/auth-form";
 import { SocialAuthButton } from "@/components/molecules/social-auth-button";
 
 interface AuthCardProps {
-  defaultMode?: "login" | "signup";
+  mode: "login" | "signup";
   onEmailSubmit: (data: {
     email: string;
     password: string;
@@ -25,13 +25,11 @@ interface AuthCardProps {
 }
 
 export function AuthCard({
-  defaultMode = "login",
+  mode,
   onEmailSubmit,
   onSocialLogin,
   loading,
 }: AuthCardProps) {
-  const [mode, setMode] = useState<"login" | "signup">(defaultMode);
-
   return (
     <Card className="mx-auto w-full max-w-sm">
       <CardHeader className="text-center">
@@ -75,13 +73,12 @@ export function AuthCard({
           {mode === "login"
             ? "Don't have an account? "
             : "Already have an account? "}
-          <button
+          <Link
             className="font-medium underline underline-offset-4 hover:text-primary"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            type="button"
+            href={mode === "login" ? "/signup" : "/login"}
           >
             {mode === "login" ? "Sign up" : "Sign in"}
-          </button>
+          </Link>
         </p>
       </CardContent>
     </Card>

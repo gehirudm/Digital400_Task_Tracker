@@ -9,22 +9,13 @@ import {
 } from "@/components/atoms/card";
 import { ScrollArea } from "@/components/atoms/scroll-area";
 
-import { TaskCard } from "./task-card";
+import { SortableTaskCard } from "./sortable-task-card";
 
-interface Task {
+import type { TaskCardProps } from "./task-card";
+
+type Task = Omit<TaskCardProps, "onEdit" | "onDelete" | "onPriorityChange"> & {
   id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  priority: string;
-  dueDate: string | null;
-  assignee: {
-    id: string;
-    name: string | null;
-    email: string;
-    avatarUrl: string | null;
-  } | null;
-}
+};
 
 interface KanbanColumnProps {
   title: string;
@@ -32,6 +23,7 @@ interface KanbanColumnProps {
   onAddTask?: () => void;
   onEditTask?: (id: string) => void;
   onDeleteTask?: (id: string) => void;
+  onPriorityChange?: (id: string, priority: string) => void;
 }
 
 export function KanbanColumn({
@@ -40,6 +32,7 @@ export function KanbanColumn({
   onAddTask,
   onEditTask,
   onDeleteTask,
+  onPriorityChange,
 }: KanbanColumnProps) {
   return (
     <Card className="flex w-full shrink-0 flex-col md:w-72 md:snap-center lg:w-80">
@@ -68,11 +61,12 @@ export function KanbanColumn({
           ) : (
             <div className="flex flex-col gap-2 p-1">
               {tasks.map((task) => (
-                <TaskCard
+                <SortableTaskCard
                   key={task.id}
                   {...task}
                   onDelete={onDeleteTask}
                   onEdit={onEditTask}
+                  onPriorityChange={onPriorityChange}
                 />
               ))}
             </div>

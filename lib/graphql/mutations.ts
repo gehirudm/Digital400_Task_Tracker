@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client";
 import { builder } from "./builder";
 import { ProjectType } from "./types/Project";
 import { TaskType } from "./types/Task";
+import { UserType } from "./types/User";
 
 const CreateTaskInput = builder.inputType("CreateTaskInput", {
   fields: (t) => ({
@@ -25,6 +26,13 @@ const UpdateTaskInput = builder.inputType("UpdateTaskInput", {
     dueDate: t.string({ required: false }),
     assigneeId: t.string({ required: false }),
     projectId: t.string({ required: false }),
+  }),
+});
+
+const UpdateUserInput = builder.inputType("UpdateUserInput", {
+  fields: (t) => ({
+    name: t.string({ required: false }),
+    avatarUrl: t.string({ required: false }),
   }),
 });
 
@@ -146,6 +154,28 @@ builder.mutationField("createProject", (t5) =>
         include: {
           owner: true,
           tasks: { include: { assignee: true, project: true } },
+        },
+      });
+    },
+  }),
+);
+
+builder.mutationField("updateUser", (t) =>
+  t.field({
+    type: UserType,
+    nullable: true,
+    args: { input: t.arg({ type: UpdateUserInput, required: true }) },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.userId) {
+        throw new Error("Unauthorized");
+      }
+      return prisma.user.update({
+        where: { id: ctx.userId },
+        data: {
+          ...(args.input.name !== undefined && { name: args.input.name }),
+          ...(args.input.avatarUrl !== undefined && {
+            avatarUrl: args.input.avatarUrl,
+          }),
         },
       });
     },
