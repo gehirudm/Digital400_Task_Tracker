@@ -1,20 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 
-import { Button } from "@/components/atoms/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/atoms/card";
-import { Input } from "@/components/atoms/input";
-import { Label } from "@/components/atoms/label";
 import { Separator } from "@/components/atoms/separator";
 import { Skeleton } from "@/components/atoms/skeleton";
+import { SettingsAccountCard } from "@/components/organisms/settings-account-card";
+import { SettingsProfileForm } from "@/components/organisms/settings-profile-form";
 import { useMe, useUpdateUser } from "@/hooks/use-users";
 
 export default function SettingsPage() {
@@ -62,67 +53,15 @@ export default function SettingsPage() {
       </p>
       <Separator className="my-6" />
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Profile</CardTitle>
-            <CardDescription>
-              Update your display name and profile picture.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Display Name</Label>
-              <Input
-                id="name"
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-                value={name}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="avatarUrl">Avatar URL</Label>
-              <Input
-                id="avatarUrl"
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://example.com/avatar.jpg"
-                type="url"
-                value={avatarUrl}
-              />
-              {avatarUrl && (
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
-                    <Image
-                      alt="Avatar preview"
-                      className="object-cover"
-                      fill
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                      src={avatarUrl}
-                      unoptimized
-                    />
-                  </div>
-                  <span className="text-xs text-muted-foreground">Preview</span>
-                </div>
-              )}
-            </div>
-            <Button disabled={saving} onClick={handleSave}>
-              {saving ? "Saving..." : "Save changes"}
-            </Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Account</CardTitle>
-            <CardDescription>Your account details.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div>
-              <span className="text-xs text-muted-foreground">Email</span>
-              <p className="text-sm font-medium">{data?.me?.email ?? "—"}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <SettingsProfileForm
+          avatarUrl={avatarUrl}
+          name={name}
+          onAvatarUrlChange={setAvatarUrl}
+          onNameChange={setName}
+          onSave={handleSave}
+          saving={saving}
+        />
+        <SettingsAccountCard email={data?.me?.email ?? ""} />
       </div>
     </div>
   );
