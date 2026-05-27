@@ -157,6 +157,7 @@ const eslintConfig = defineConfig([
             "graphql.config.ts",
             "next.config.ts",
             "postcss.config.mjs",
+            "vitest.config.ts",
           ],
         },
       ],
