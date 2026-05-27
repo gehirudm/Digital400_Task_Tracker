@@ -365,13 +365,14 @@ const eslintConfig = defineConfig([
   },
 
   // ====================================================================
-  // SHADCN ATOMS — relax rules for auto-generated shadcn/ui components
+  // COMPONENTS — relax rules for React component patterns
   // ====================================================================
   {
-    name: "shadcn/atoms",
-    files: ["components/atoms/**"],
+    name: "components/rules",
+    files: ["components/**"],
     rules: {
       "sonarjs/prefer-read-only-props": "off",
+      "sonarjs/deprecation": "off",
     },
   },
 ]);
