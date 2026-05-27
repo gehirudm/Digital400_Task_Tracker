@@ -18,6 +18,7 @@ export default function LoginPage() {
       password: data.password,
     });
     if (error) throw error;
+
     router.push("/dashboard");
     router.refresh();
   };

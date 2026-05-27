@@ -19,7 +19,19 @@ export default function SignupPage() {
       password: data.password,
       options: { data: { name: data.name } },
     });
-    if (error) throw error;
+
+    if (error) {
+      if (
+        error.message?.includes("already registered") ||
+        error.message?.includes("already exists")
+      ) {
+        throw new Error(
+          "An account with this email already exists. Please sign in instead.",
+        );
+      }
+      throw error;
+    }
+
     router.push("/dashboard");
     router.refresh();
   };
