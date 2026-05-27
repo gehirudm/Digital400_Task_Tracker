@@ -104,7 +104,7 @@ export function KanbanBoard({
       onDragStart={handleDragStart}
       sensors={sensors}
     >
-      <div className="flex gap-4 overflow-x-auto p-4">
+      <div className="flex h-full gap-4 overflow-x-auto p-4 snap-x snap-mandatory">
         {columns.map((column) => (
           <SortableContext
             key={column.id}
@@ -122,7 +122,7 @@ export function KanbanBoard({
       </div>
       <DragOverlay>
         {activeTask ? (
-          <div className="w-80 opacity-90">
+          <div className="w-[85vw] opacity-90 sm:w-72 md:w-80">
             <TaskCard {...activeTask} />
           </div>
         ) : null}

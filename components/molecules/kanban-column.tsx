@@ -42,7 +42,7 @@ export function KanbanColumn({
   onDeleteTask,
 }: KanbanColumnProps) {
   return (
-    <Card className="flex w-80 shrink-0 flex-col">
+    <Card className="flex w-[85vw] shrink-0 snap-center flex-col sm:w-72 md:w-80">
       <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
         <CardTitle className="text-sm font-semibold">
           {title}

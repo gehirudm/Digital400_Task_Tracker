@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
 
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
@@ -13,11 +13,24 @@ interface DashboardHeaderProps {
     avatarUrl: string | null;
   };
   onSignOut: () => void;
+  onMenuToggle: () => void;
 }
 
-export function DashboardHeader({ user, onSignOut }: DashboardHeaderProps) {
+export function DashboardHeader({
+  user,
+  onSignOut,
+  onMenuToggle,
+}: DashboardHeaderProps) {
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+    <header className="flex h-14 items-center gap-4 border-b bg-background px-4">
+      <Button
+        className="h-8 w-8 md:hidden"
+        onClick={onMenuToggle}
+        size="icon"
+        variant="ghost"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input className="pl-8" placeholder="Search tasks..." type="search" />

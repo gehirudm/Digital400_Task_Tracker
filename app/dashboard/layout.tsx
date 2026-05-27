@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Sheet, SheetContent } from "@/components/atoms/sheet";
 import { DashboardHeader } from "@/components/organisms/dashboard-header";
 import { Sidebar } from "@/components/organisms/sidebar";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -19,6 +20,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     email: string;
     avatarUrl: string | null;
   } | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -49,9 +51,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
+      {/* Desktop sidebar: always visible on md+ */}
+      <Sidebar className="hidden md:flex" />
+      {/* Mobile sidebar: Sheet overlay */}
+      <Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
+        <SheetContent className="w-56 p-0" side="left">
+          <Sidebar
+            className="border-0"
+            onNavigate={() => setMobileOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
       <div className="flex flex-1 flex-col overflow-hidden">
-        <DashboardHeader onSignOut={handleSignOut} user={user} />
+        <DashboardHeader
+          onMenuToggle={() => setMobileOpen(true)}
+          onSignOut={handleSignOut}
+          user={user}
+        />
         <main className="flex-1 overflow-hidden bg-muted/30">{children}</main>
       </div>
     </div>

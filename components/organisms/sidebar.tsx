@@ -6,24 +6,39 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
+const dashboardPath = "/dashboard";
+
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/projects", label: "Projects", icon: Home },
-  { href: "/dashboard/team", label: "Team", icon: Users },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: dashboardPath, label: "Dashboard", icon: LayoutDashboard },
+  { href: `${dashboardPath}/projects`, label: "Projects", icon: Home },
+  { href: `${dashboardPath}/team`, label: "Team", icon: Users },
+  { href: `${dashboardPath}/settings`, label: "Settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r bg-background">
+    <aside
+      className={cn(
+        "flex w-56 shrink-0 flex-col border-r bg-background",
+        className,
+      )}
+    >
       <div className="flex h-14 items-center border-b px-4">
         <span className="text-sm font-semibold">TaskFlow</span>
       </div>
       <nav className="flex-1 space-y-1 p-2">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive =
+            item.href === dashboardPath
+              ? pathname === dashboardPath
+              : pathname.startsWith(item.href);
 
           return (
             <Link
@@ -35,6 +50,7 @@ export function Sidebar() {
               )}
               href={item.href}
               key={item.href}
+              onClick={onNavigate}
             >
               <item.icon className="h-4 w-4" />
               {item.label}

@@ -2,13 +2,15 @@
 
 import { KanbanBoard } from "@/components/organisms/kanban-board";
 
+const noop = () => undefined;
+
 export default function DashboardPage() {
   return (
     <KanbanBoard
-      onAddTask={() => undefined}
-      onDeleteTask={() => undefined}
-      onEditTask={() => undefined}
-      onMoveTask={() => undefined}
+      onAddTask={noop}
+      onDeleteTask={noop}
+      onEditTask={noop}
+      onMoveTask={noop}
       tasks={[]}
     />
   );
