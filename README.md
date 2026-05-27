@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Digital400 Task Tracker
+
+A Kanban-style task management application built with Next.js 16, Supabase, GraphQL, and Prisma.
+
+## Tech Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS v4, shadcn/ui
+- **Auth:** Supabase Auth (email/password, Google OAuth, GitHub OAuth)
+- **API:** GraphQL (Pothos + Yoga) via Next.js Route Handlers
+- **Database:** Supabase PostgreSQL, Prisma ORM
+- **Drag & Drop:** @dnd-kit
+- **Monitoring:** Sentry
+- **Linting:** ESLint 9 flat config, Prettier
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 22+
+- pnpm
+- A Supabase project
+
+### Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone and install
+git clone <repo-url>
+cd Digital400_Task_Tracker
+pnpm install
+
+# Create environment file
+cp .env.example .env
+# Fill in your Supabase and Sentry credentials in .env
+
+# Generate Prisma client
+pnpm postinstall
+
+# Push database schema
+pnpm db:push
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev        # Start dev server (Turbopack)
+pnpm lint       # Run ESLint
+pnpm lint:fix   # Auto-fix lint issues
+pnpm build      # Lint + production build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+### Database
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm db:push      # Push schema to database
+pnpm db:generate  # Regenerate Prisma client
+pnpm db:studio    # Open Prisma Studio
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/                    # Next.js App Router pages
+  (auth)/               # Auth route group (login, signup)
+  (dashboard)/          # Protected route group
+  api/graphql/          # GraphQL endpoint
+components/
+  atoms/                # shadcn/ui primitives
+  molecules/            # Composed components (TaskCard, AuthForm, etc.)
+  organisms/            # Complex sections (KanbanBoard, Sidebar, etc.)
+hooks/                  # Custom React hooks
+lib/                    # Shared utilities
+  graphql/              # Pothos schema, resolvers, operations
+  prisma/               # Prisma client
+  supabase/             # Supabase server + browser clients
+prisma/                 # Prisma schema
+```
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Supabase PostgreSQL connection string (PgBouncer) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase publishable key |
+| `SENTRY_AUTH_TOKEN` | No | Sentry auth token for source maps |
