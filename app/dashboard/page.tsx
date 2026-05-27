@@ -12,6 +12,7 @@ export default function DashboardPage() {
     users,
     dialogOpen,
     setDialogOpen,
+    editingTask,
     handleAddTask,
     handleSaveTask,
     handleEditTask,
@@ -39,10 +40,25 @@ export default function DashboardPage() {
         tasks={tasks}
       />
       <CreateTaskDialog
+        key={editingTask?.id ?? "create"}
+        initialData={
+          editingTask
+            ? {
+                title: editingTask.title,
+                description: editingTask.description ?? "",
+                status: editingTask.status,
+                priority: editingTask.priority,
+                dueDate: editingTask.dueDate ?? "",
+                projectId: editingTask.project?.id ?? "",
+                assigneeId: editingTask.assignee?.id ?? "",
+              }
+            : undefined
+        }
         onOpenChange={setDialogOpen}
         onSave={handleSaveTask}
         open={dialogOpen}
         projects={projects}
+        taskId={editingTask?.id}
         users={users}
       />
     </>

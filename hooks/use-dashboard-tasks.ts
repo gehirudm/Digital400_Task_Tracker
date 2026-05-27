@@ -56,6 +56,7 @@ export function useDashboardTasks() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("todo");
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const allTasks = (data?.tasks ?? []).map((t) => ({
     ...t,
@@ -86,25 +87,44 @@ export function useDashboardTasks() {
     })) ?? [];
 
   const handleAddTask = (status: string) => {
+    setEditingTask(null);
     setSelectedStatus(status);
     setDialogOpen(true);
   };
 
   const handleSaveTask = async (taskData: CreateTaskData) => {
-    const input: Record<string, string | undefined> = {
-      title: taskData.title,
-      description: taskData.description || undefined,
-      status: selectedStatus,
-      priority: taskData.priority,
-      dueDate: taskData.dueDate || undefined,
-    };
-    if (taskData.projectId) input.projectId = taskData.projectId;
-    if (taskData.assigneeId) input.assigneeId = taskData.assigneeId;
-    await createTask({ variables: { input } });
+    if (editingTask) {
+      const input: Record<string, string | undefined> = {
+        title: taskData.title,
+        description: taskData.description || undefined,
+        status: taskData.status,
+        priority: taskData.priority,
+        dueDate: taskData.dueDate || undefined,
+        projectId: taskData.projectId || undefined,
+        assigneeId: taskData.assigneeId || undefined,
+      };
+      await updateTask({ variables: { id: editingTask.id, input } });
+      setEditingTask(null);
+    } else {
+      const input: Record<string, string | undefined> = {
+        title: taskData.title,
+        description: taskData.description || undefined,
+        status: selectedStatus,
+        priority: taskData.priority,
+        dueDate: taskData.dueDate || undefined,
+      };
+      if (taskData.projectId) input.projectId = taskData.projectId;
+      if (taskData.assigneeId) input.assigneeId = taskData.assigneeId;
+      await createTask({ variables: { input } });
+    }
   };
 
   const handleEditTask = (id: string) => {
-    void id;
+    const task = allTasks.find((t) => t.id === id);
+    if (task) {
+      setEditingTask(task);
+      setDialogOpen(true);
+    }
   };
 
   const handleDeleteTask = async (id: string) => {
@@ -130,6 +150,7 @@ export function useDashboardTasks() {
     users,
     dialogOpen,
     setDialogOpen,
+    editingTask,
     handleAddTask,
     handleSaveTask,
     handleEditTask,

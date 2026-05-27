@@ -40,6 +40,8 @@ interface CreateTaskDialogProps {
   onOpenChange?: (open: boolean) => void;
   projects?: ProjectOption[];
   users?: UserOption[];
+  taskId?: string;
+  initialData?: Partial<CreateTaskData>;
 }
 
 export interface CreateTaskData {
@@ -59,14 +61,21 @@ export function CreateTaskDialog({
   onOpenChange,
   projects = [],
   users = [],
+  taskId,
+  initialData,
 }: CreateTaskDialogProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("todo");
-  const [priority, setPriority] = useState("medium");
-  const [dueDate, setDueDate] = useState("");
-  const [projectId, setProjectId] = useState("none");
-  const [assigneeId, setAssigneeId] = useState("none");
+  const isEdit = !!taskId;
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [description, setDescription] = useState(
+    initialData?.description ?? "",
+  );
+  const [status, setStatus] = useState(initialData?.status ?? "todo");
+  const [priority, setPriority] = useState(initialData?.priority ?? "medium");
+  const [dueDate, setDueDate] = useState(initialData?.dueDate ?? "");
+  const [projectId, setProjectId] = useState(initialData?.projectId ?? "none");
+  const [assigneeId, setAssigneeId] = useState(
+    initialData?.assigneeId ?? "none",
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
@@ -102,7 +111,7 @@ export function CreateTaskDialog({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Task</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Task" : "Create Task"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
