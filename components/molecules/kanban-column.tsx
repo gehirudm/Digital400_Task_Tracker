@@ -60,17 +60,23 @@ export function KanbanColumn({
         </Button>
       </CardHeader>
       <CardContent className="flex-1 p-2">
-        <ScrollArea className="h-[calc(100vh-14rem)]">
-          <div className="flex flex-col gap-2 p-1">
-            {tasks.map((task) => (
-              <TaskCard
-                key={task.id}
-                {...task}
-                onDelete={onDeleteTask}
-                onEdit={onEditTask}
-              />
-            ))}
-          </div>
+        <ScrollArea className="h-[calc(100vh-18rem)]">
+          {tasks.length === 0 ? (
+            <p className="px-4 py-8 text-center text-xs text-muted-foreground">
+              It&apos;s very empty in here
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2 p-1">
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  {...task}
+                  onDelete={onDeleteTask}
+                  onEdit={onEditTask}
+                />
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </CardContent>
     </Card>
