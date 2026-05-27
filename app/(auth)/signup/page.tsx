@@ -1,0 +1,41 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
+import { AuthCard } from "@/components/organisms/auth-card";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+
+export default function SignupPage() {
+  const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
+
+  const handleEmailSignUp = async (data: {
+    email: string;
+    password: string;
+    name?: string;
+  }) => {
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { name: data.name } },
+    });
+    if (error) throw error;
+    router.push("/dashboard");
+    router.refresh();
+  };
+
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/callback` },
+    });
+  };
+
+  return (
+    <AuthCard
+      defaultMode="signup"
+      onEmailSubmit={handleEmailSignUp}
+      onSocialLogin={handleSocialLogin}
+    />
+  );
+}
